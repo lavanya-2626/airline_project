@@ -2,7 +2,7 @@
 
 SkyBound is a production-grade, modular Django application designed for a scalable SaaS experience. It features a layered architecture, MongoDB integration, atomic reservation logic, and a high-end responsive UI.
 
-![SkyBound Homepage](docs/screenshots/homepage.png)
+![SkyBound Hero](static/images/hero_flight.png)
 
 ## 📸 Snapshots
 
