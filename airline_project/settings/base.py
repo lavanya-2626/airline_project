@@ -75,7 +75,7 @@ MONGODB_DB_NAME = os.environ.get('MONGODB_DB_NAME', 'airlinedatabase')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
+        'ENGINE': 'django_mongodb_backend',
         'NAME': MONGODB_DB_NAME,
         'CLIENT': {
             'host': MONGODB_URI,
