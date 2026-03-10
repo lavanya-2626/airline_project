@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h1 class="fw-bold mb-0">My Bookings</h1>
+            <p class="text-muted">Manage your upcoming and past travels</p>
+        </div>
+        <a href="{% url 'search_flights' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> New Booking
+        </a>
+    </div>
+
+    {% if bookings %}
+        <div class="row g-4">
+            {% for booking in bookings %}
+            <div class="col-12">
+                <div class="card border-0 shadow-sm transition-all overflow-hidden" style="border-radius: 15px;">
+                    <div class="row g-0">
+                        <!-- Left Status Bar -->
+                        <div class="col-md-1 bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'cancelled' %}danger{% else %}warning{% endif %}" style="min-height: 5px;"></div>
+                        
+                        <div class="col-md-11">
+                            <div class="card-body p-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 mb-3 mb-md-0">
+                                        <div class="small text-muted text-uppercase fw-bold ls-1">Booking Ref</div>
+                                        <div class="fw-bold h5 mb-2">{{ booking.booking_id }}</div>
+                                        <span class="badge rounded-pill {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-warning text-dark{% endif %} px-3 py-2">
+                                            {{ booking.status|upper }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="col-md-5 mb-3 mb-md-0">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="text-center">
+                                                <div class="h5 fw-bold mb-0">{{ booking.flight.source }}</div>
+                                                <small class="text-muted">{{ booking.flight.departure_time|date:"H:i" }}</small>
+                                            </div>
+                                            <div class="flex-grow-1 border-bottom border-dashed mx-3"></div>
+                                            <div class="text-center">
+                                                <div class="h5 fw-bold mb-0">{{ booking.flight.destination }}</div>
+                                                <small class="text-muted">{{ booking.flight.arrival_time|date:"H:i" }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="small fw-bold">{{ booking.flight.airline_name }} ({{ booking.flight.flight_id }})</div>
+                                        <div class="small text-muted">{{ booking.flight.departure_time|date:"D, d M Y" }}</div>
+                                    </div>
+
+                                    <div class="col-md-2 mb-3 mb-md-0 text-center">
+                                        <div class="small text-muted mb-1">Passenger</div>
+                                        <div class="fw-bold mb-1">{{ booking.passenger_name }}</div>
+                                        <div class="small"><span class="text-muted">Seat:</span> <strong>{{ booking.seat_number }}</strong></div>
+                                    </div>
+
+                                    <div class="col-md-2 text-md-end text-center">
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'booking_confirmation' booking.id %}" class="btn btn-outline-primary btn-sm rounded-pill py-2 fw-bold">View Ticket</a>
+                                            {% if booking.can_cancel %}
+                                            <form action="{% url 'cancel_booking' booking.id %}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?')">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill py-2 fw-bold w-100">Cancel</button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if bookings.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if bookings.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm rounded-circle mx-1" href="?page={{ bookings.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for i in bookings.paginator.page_range %}
+                    {% if bookings.number == i %}
+                        <li class="page-item active"><span class="page-link shadow-sm rounded-circle mx-1">{{ i }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link shadow-sm rounded-circle mx-1" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if bookings.has_next %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm rounded-circle mx-1" href="?page={{ bookings.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 20px;">
+            <div class="card-body">
+                <div class="mb-4">
+                    <i class="bi bi-briefcase text-muted" style="font-size: 5rem;"></i>
+                </div>
+                <h3 class="fw-bold">No Bookings Yet</h3>
+                <p class="text-muted lead">You haven't booked any flights with us yet. Ready to fly?</p>
+                <a href="{% url 'search_flights' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm mt-3">Book Your First Flight</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .ls-1 { letter-spacing: 1px; }
+    .border-dashed { border-style: dashed !important; }
+    .transition-all { transition: all 0.3s ease; }
+    .transition-all:hover { transform: scale(1.01); box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1)!important; }
+    .page-link { border: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d6efd; }
+    .page-item.active .page-link { background-color: #0d6efd; color: white; }
+</style>
+{% endblock %}

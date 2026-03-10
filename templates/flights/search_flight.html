@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Flights - Airline Booking{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Search Results</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold">Flights for You</h1>
+            <p class="text-muted">Showing results for {{ source|default:"anywhere" }} to {{ destination|default:"anywhere" }}</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar Filters -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 100px; border-radius: 15px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Refine Search</h5>
+                    <form method="GET" action="{% url 'search_flights' %}">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">From</label>
+                            <input type="text" class="form-control" name="source" value="{{ source }}" placeholder="Departure City">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">To</label>
+                            <input type="text" class="form-control" name="destination" value="{{ destination }}" placeholder="Arrival City">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Travel Date</label>
+                            <input type="date" class="form-control" name="travel_date" value="{{ travel_date }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">Search Again</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="col-md-9">
+            {% if flights %}
+                <div class="row g-4">
+                    {% for flight in flights %}
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm transition-all" style="border-radius: 15px; border-left: 5px solid {% if flight.seats_available > 10 %}#0d6efd{% else %}#ffc107{% endif %} !important;">
+                            <div class="card-body p-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2 text-center text-md-start mb-3 mb-md-0">
+                                        <div class="fw-bold text-primary">{{ flight.airline_name }}</div>
+                                        <small class="text-muted text-uppercase fw-bold ls-1">{{ flight.flight_id }}</small>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3 mb-md-0">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="text-end me-3">
+                                                <div class="h5 fw-bold mb-0">{{ flight.departure_time|date:"H:i" }}</div>
+                                                <div class="small fw-bold">{{ flight.source }}</div>
+                                            </div>
+                                            <div class="flex-grow-1 border-bottom border-dashed mx-2 position-relative" style="min-width: 50px;">
+                                                <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 small">✈</span>
+                                            </div>
+                                            <div class="text-start ms-3">
+                                                <div class="h5 fw-bold mb-0">{{ flight.arrival_time|date:"H:i" }}</div>
+                                                <div class="small fw-bold">{{ flight.destination }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-2">{{ flight.departure_time|date:"D, d M Y" }}</div>
+                                    </div>
+                                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                                        <div class="small text-muted mb-1">Seats Available</div>
+                                        <div class="fw-bold {% if flight.seats_available < 10 %}text-danger{% endif %}">
+                                            {{ flight.seats_available }}
+                                        </div>
+                                        <div class="progress mt-2 mx-auto" style="height: 5px; max-width: 100px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ flight.booking_percentage }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-center text-md-end">
+                                        <div class="h3 fw-bold text-dark mb-3">${{ flight.price }}</div>
+                                        {% if user.is_authenticated %}
+                                            {% if flight.seats_available > 0 %}
+                                                <a href="{% url 'book_flight' flight.id %}" class="btn btn-primary rounded-pill px-4 py-2 w-100 fw-bold">Select</a>
+                                            {% else %}
+                                                <button class="btn btn-secondary rounded-pill px-4 py-2 w-100 fw-bold" disabled>Sold Out</button>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{% url 'login' %}?next={{ request.path }}?{{ request.GET.urlencode }}" class="btn btn-outline-primary rounded-pill px-4 py-2 w-100 fw-bold">Login to Book</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if flights.has_other_pages %}
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if flights.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link shadow-sm rounded-circle mx-1" href="?page={{ flights.previous_page_number }}&source={{ source }}&destination={{ destination }}&travel_date={{ travel_date }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in flights.paginator.page_range %}
+                            {% if flights.number == i %}
+                                <li class="page-item active"><span class="page-link shadow-sm rounded-circle mx-1">{{ i }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link shadow-sm rounded-circle mx-1" href="?page={{ i }}&source={{ source }}&destination={{ destination }}&travel_date={{ travel_date }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if flights.has_next %}
+                            <li class="page-item">
+                                <a class="page-link shadow-sm rounded-circle mx-1" href="?page={{ flights.next_page_number }}&source={{ source }}&destination={{ destination }}&travel_date={{ travel_date }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-airplane-engines text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="fw-bold">No flights found</h3>
+                    <p class="text-muted">We couldn't find any flights matching your search criteria.<br>Try changing the dates or locations.</p>
+                    <a href="{% url 'search_flights' %}" class="btn btn-primary rounded-pill px-4 mt-3">Reset Filters</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-all { transition: all 0.3s ease; }
+    .transition-all:hover { transform: translateY(-5px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.075)!important; }
+    .ls-1 { letter-spacing: 1px; }
+    .border-dashed { border-style: dashed !important; }
+    .page-link { border: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #0d6efd; }
+    .page-item.active .page-link { background-color: #0d6efd; color: white; }
+</style>
+{% endblock %}

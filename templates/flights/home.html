@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Airline Booking{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden text-white py-5" 
+         style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%); min-height: 400px; display: flex; align-items: center;">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: -1;">
+        <img src="{% static 'images/hero.png' %}" class="w-100 h-100 object-fit-cover opacity-25" alt="Banner">
+    </div>
+    <div class="container py-5 text-center">
+        <h1 class="display-3 fw-bold mb-3 animate__animated animate__fadeInDown">Sky's the Limit.</h1>
+        <p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s opacity-75">
+            Discover breathtaking destinations and book your next adventure with ease.
+        </p>
+        
+        <!-- Quick Search Bar Overlay -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0 bg-white p-2 rounded-pill">
+                    <form method="GET" action="{% url 'search_flights' %}" class="row g-0 align-items-center">
+                        <div class="col-md-4 px-4 border-end">
+                            <label class="d-block text-muted small text-start ps-1 mb-1">Departure</label>
+                            <input type="text" class="form-control border-0 p-0 shadow-none bg-transparent" name="source" placeholder="From where?" required>
+                        </div>
+                        <div class="col-md-4 px-4 border-end">
+                            <label class="d-block text-muted small text-start ps-1 mb-1">Destination</label>
+                            <input type="text" class="form-control border-0 p-0 shadow-none bg-transparent" name="destination" placeholder="To where?" required>
+                        </div>
+                        <div class="col-md-3 px-4">
+                            <label class="d-block text-muted small text-start ps-1 mb-1">Date</label>
+                            <input type="date" class="form-control border-0 p-0 shadow-none bg-transparent" name="travel_date" required>
+                        </div>
+                        <div class="col-md-1 p-1">
+                            <button type="submit" class="btn btn-primary rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                                <i class="bi bi-search"></i> Go
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Flights -->
+<section class="py-5 bg-white">
+    <div class="container pt-5">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h6 class="text-primary fw-bold text-uppercase ls-1">Popular Choice</h6>
+                <h2 class="fw-bold h1">Featured Flights</h2>
+            </div>
+            <a href="{% url 'search_flights' %}" class="btn btn-outline-primary rounded-pill px-4">View All Flights</a>
+        </div>
+
+        <div class="row g-4">
+            {% if flights %}
+                {% for flight in flights %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-hover transition-all" style="border-radius: 20px; overflow: hidden; border: 1px solid #eee;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-light text-primary px-3 py-2 rounded-pill fw-bold">{{ flight.airline_name }}</span>
+                                <span class="h4 fw-bold text-success mb-0">${{ flight.price }}</span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="text-center">
+                                    <div class="h5 fw-bold mb-0">{{ flight.source }}</div>
+                                    <small class="text-muted">Departure</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3 border-bottom border-dashed position-relative" style="height: 1px;">
+                                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-2">
+                                        ✈
+                                    </span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="h5 fw-bold mb-0">{{ flight.destination }}</div>
+                                    <small class="text-muted">Arrival</small>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-4">
+                                <div class="col-6">
+                                    <div class="bg-light p-2 rounded text-center">
+                                        <small class="text-muted d-block small">Take off</small>
+                                        <span class="small fw-bold">{{ flight.departure_time|date:"H:i" }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light p-2 rounded text-center">
+                                        <small class="text-muted d-block small">Landing</small>
+                                        <span class="small fw-bold">{{ flight.arrival_time|date:"H:i" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-0">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'book_flight' flight.id %}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">Select Flight</a>
+                            {% else %}
+                                <a href="{% url 'login' %}?next={{ request.path }}?{{ request.GET.urlencode }}" class="btn btn-outline-primary rounded-pill px-4 py-2 w-100 fw-bold">Login to Book</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No flights available at the moment. Please check back later.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .ls-1 { letter-spacing: 1px; }
+    .shadow-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important;
+    }
+    .transition-all { transition: all 0.3s ease-in-out; }
+    .border-dashed { border-style: dashed !important; }
+</style>
+{% endblock %}
