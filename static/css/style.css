@@ -24,8 +24,10 @@ main {
 .hero-section {
     color: white;
     text-align: center;
-    padding: 80px 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 120px 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('../images/hero_flight.png') no-repeat center center;
+    background-size: cover;
+    position: relative;
 }
 
 .hero-section h1 {

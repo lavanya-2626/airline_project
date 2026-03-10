@@ -17,26 +17,36 @@ logger = logging.getLogger('apps.auth_app')
 def register(request):
     """Register a new user account."""
     if request.user.is_authenticated:
+        logger.info("Register: User %s is already authenticated, redirecting home", request.user.username)
         return redirect('home')
 
     if request.method == 'POST':
+        logger.info("Register: Received POST request")
         form = RegisterForm(request.POST)
         if form.is_valid():
+            logger.info("Register: Form is valid, calling AuthService.register_user")
             try:
                 AuthService.register_user(
                     username=form.cleaned_data['username'],
                     email=form.cleaned_data['email'],
                     password=form.cleaned_data['password'],
                 )
+                logger.info("Register: User successfully registered, redirecting to login")
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('login')
             except UserAlreadyExistsError as e:
+                logger.warning("Register: UserAlreadyExistsError: %s", str(e))
                 messages.error(request, str(e))
+            except Exception as e:
+                logger.error("Register: UNEXPECTED ERROR: %s", str(e), exc_info=True)
+                messages.error(request, f"An unexpected error occurred: {str(e)}")
         else:
+            logger.warning("Register: Form is INVALID: %s", form.errors)
             for field, errors in form.errors.items():
                 for error in errors:
-                    messages.error(request, error)
+                    messages.error(request, f"{field.capitalize()}: {error}")
     else:
+        logger.info("Register: Rendering registration form (GET)")
         form = RegisterForm()
 
     return render(request, 'auth/register.html', {'form': form})

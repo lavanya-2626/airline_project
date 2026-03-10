@@ -9,12 +9,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Registration form validation
     const registerForm = document.querySelector('form[method="POST"]');
-    if (registerForm && document.querySelector('#password_confirm')) {
+    if (registerForm && document.querySelector('input[name="password_confirm"]')) {
         registerForm.addEventListener('submit', function(e) {
-            const username = document.querySelector('#username').value.trim();
-            const email = document.querySelector('#email').value.trim();
-            const password = document.querySelector('#password').value;
-            const passwordConfirm = document.querySelector('#password_confirm').value;
+            const usernameInput = document.querySelector('input[name="username"]');
+            const emailInput = document.querySelector('input[name="email"]');
+            const passwordInput = document.querySelector('input[name="password"]');
+            const passwordConfirmInput = document.querySelector('input[name="password_confirm"]');
+            
+            if (!usernameInput) return; // Not the registration form
+            
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const passwordConfirm = passwordConfirmInput.value;
 
             if (!username || !email || !password || !passwordConfirm) {
                 e.preventDefault();
@@ -52,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form[novalidate]');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            if (!form.checkValidity() === false) {
+            if (!form.checkValidity()) {
                 e.preventDefault();
                 e.stopPropagation();
             }
@@ -70,15 +77,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Real-time password match check
-    const password = document.querySelector('#password');
-    const passwordConfirm = document.querySelector('#password_confirm');
+    const password = document.querySelector('input[name="password"]');
+    const passwordConfirm = document.querySelector('input[name="password_confirm"]');
     if (password && passwordConfirm) {
         passwordConfirm.addEventListener('input', function() {
             if (this.value && password.value !== this.value) {
                 this.classList.add('is-invalid');
-            } else if (this.value === password.value) {
+                this.classList.remove('is-valid');
+            } else if (this.value === password.value && this.value) {
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-invalid', 'is-valid');
             }
         });
     }

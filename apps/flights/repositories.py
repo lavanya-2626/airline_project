@@ -43,6 +43,6 @@ class FlightRepository:
         return paginator.get_page(page)
 
     @staticmethod
-    def get_by_id(flight_id: int) -> Flight:
+    def get_by_id(flight_id: str) -> Flight:
         """Fetch a single flight by primary key or raise Flight.DoesNotExist."""
         return Flight.objects.get(pk=flight_id)

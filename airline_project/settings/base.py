@@ -21,10 +21,10 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 
 # ─── Installed Apps ───────────────────────────────────────────────────────────
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'apps.core.mongo_compat.MongoAdminConfig',
+    'apps.core.mongo_compat.MongoAuthConfig',
+    'apps.core.mongo_compat.MongoContentTypesConfig',
+    'apps.core.mongo_compat.MongoSessionsConfig',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Project apps
@@ -77,9 +77,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django_mongodb_backend',
         'NAME': MONGODB_DB_NAME,
-        'CLIENT': {
-            'host': MONGODB_URI,
-        },
+        'HOST': MONGODB_URI,
     }
 }
 
@@ -102,7 +100,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 
 # ─── Auth ─────────────────────────────────────────────────────────────────────
 LOGIN_URL = 'login'

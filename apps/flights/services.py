@@ -24,7 +24,7 @@ class FlightService:
         )
 
     @staticmethod
-    def get_flight(flight_id: int):
+    def get_flight(flight_id: str):
         try:
             return FlightRepository.get_by_id(flight_id)
         except Exception:
