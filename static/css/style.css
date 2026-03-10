@@ -1,0 +1,231 @@
+/* Global Styles */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Hero Section */
+.hero-section {
+    color: white;
+    text-align: center;
+    padding: 80px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.hero-section h1 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-section .lead {
+    font-size: 1.5rem;
+}
+
+/* Search Section */
+.search-section {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.search-section form input,
+.search-section form select {
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.search-section form button {
+    padding: 12px;
+    border-radius: 5px;
+}
+
+/* Flight Card */
+.flight-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.flight-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.flight-card .card-title {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.flight-card .card-footer {
+    padding: 0.75rem 1.25rem;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Form validation */
+.form-control.is-invalid,
+.form-control.is-invalid:focus {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.is-valid,
+.form-control.is-valid:focus {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.invalid-feedback {
+    display: block;
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.valid-feedback {
+    display: block;
+    color: var(--success-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #5568d3;
+    border-color: #5568d3;
+}
+
+/* Tables */
+.table {
+    background-color: white;
+    border-radius: 5px;
+}
+
+.table thead {
+    background-color: var(--dark-color);
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 5px;
+    border: 0;
+    margin-bottom: 20px;
+}
+
+.alert-info {
+    background-color: #cfe2ff;
+    border: 1px solid #b6d4fe;
+    color: #084298;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    color: #0f5132;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+}
+
+/* Card Section */
+.card {
+    border: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.card-header {
+    border-radius: 8px 8px 0 0;
+    border: 0;
+    padding: 1.5rem;
+}
+
+/* Badge */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* Featured Flights Section */
+.featured-flights {
+    padding: 60px 0;
+    background-color: white;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+
+    .search-section form .col-md-1 {
+        width: 100%;
+    }
+}
+
+/* Status Badge Colors */
+.badge.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: black;
+}
+
+.badge.bg-danger {
+    background-color: var(--danger-color) !important;
+}
